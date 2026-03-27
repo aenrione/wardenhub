@@ -1,0 +1,6 @@
+---
+- name: Install WardHub agent
+  hosts: "{{ target | default('priority_1') }}"
+  gather_facts: true
+  roles:
+    - wardenhub_agent

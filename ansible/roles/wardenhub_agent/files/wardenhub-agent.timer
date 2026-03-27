@@ -1,0 +1,11 @@
+[Unit]
+Description=WardHub Security Audit Timer
+After=network-online.target
+
+[Timer]
+OnCalendar=*:0/180
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,9 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart wardenhub timer
+  ansible.builtin.systemd:
+    name: wardenhub-agent.timer
+    state: restarted

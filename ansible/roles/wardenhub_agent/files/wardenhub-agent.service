@@ -1,0 +1,18 @@
+[Unit]
+Description=WardHub Security Audit Agent
+Documentation=https://github.com/wardenhub/wardenhub
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/wardenhub/agent.yaml
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/local/bin/wardenhub-agent run --config /etc/wardenhub/agent.yaml
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=wardenhub-agent
+TimeoutStartSec=900
+
+[Install]
+WantedBy=multi-user.target

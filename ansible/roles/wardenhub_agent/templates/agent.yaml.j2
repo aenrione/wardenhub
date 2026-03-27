@@ -1,0 +1,15 @@
+hub:
+  pushgateway_url: "{{ wardenhub_pushgateway_url }}"
+{% if wardenhub_coordinator_url is defined %}
+  coordinator_url: "{{ wardenhub_coordinator_url }}"
+{% endif %}
+
+schedule:
+  interval: "3h"
+
+providers:
+  # auto-detection enabled — lynis, docker, proxmox, network detected at runtime
+  disabled: []
+
+network:
+  expected_ports: {{ wardenhub_expected_ports | default([22]) | tojson }}

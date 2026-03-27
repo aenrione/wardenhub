@@ -1,0 +1,66 @@
+---
+- name: Install pip and python3
+  ansible.builtin.package:
+    name:
+      - python3
+      - python3-pip
+    state: present
+  ignore_errors: true
+
+- name: Install pip via get-pip if package unavailable
+  ansible.builtin.shell: |
+    curl -fsSL https://bootstrap.pypa.io/get-pip.py | python3
+  args:
+    creates: /usr/local/bin/pip
+  when: ansible_facts.packages is not defined or 'python3-pip' not in ansible_facts.packages
+
+- name: Install wardenhub-agent from GitHub
+  ansible.builtin.pip:
+    name: "git+https://github.com/aenrione/wardenhub.git#subdirectory=agent"
+    state: present
+    executable: pip3
+    extra_args: "--break-system-packages"
+
+- name: Create config directory
+  ansible.builtin.file:
+    path: /etc/wardenhub
+    state: directory
+    mode: "0755"
+
+- name: Write agent config
+  ansible.builtin.template:
+    src: agent.yaml.j2
+    dest: /etc/wardenhub/agent.yaml
+    mode: "0640"
+  notify: Restart wardenhub timer
+
+- name: Copy systemd service unit
+  ansible.builtin.copy:
+    src: wardenhub-agent.service
+    dest: /etc/systemd/system/wardenhub-agent.service
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Copy systemd timer unit
+  ansible.builtin.copy:
+    src: wardenhub-agent.timer
+    dest: /etc/systemd/system/wardenhub-agent.timer
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Enable and start wardenhub timer
+  ansible.builtin.systemd:
+    name: wardenhub-agent.timer
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Run first audit immediately
+  ansible.builtin.command: wardenhub-agent run --config /etc/wardenhub/agent.yaml
+  register: first_run
+  changed_when: false
+  failed_when: false
+
+- name: Show first audit result
+  ansible.builtin.debug:
+    msg: "{{ first_run.stdout_lines[-3:] if first_run.stdout_lines else 'no output' }}"

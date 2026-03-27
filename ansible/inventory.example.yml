@@ -1,0 +1,21 @@
+all:
+  vars:
+    ansible_user: root
+    wardenhub_pushgateway_url: "http://<hub-ip>:9091"
+    wardenhub_coordinator_url: "http://<hub-ip>:8080"
+
+  children:
+    priority_1:
+      hosts:
+        my-docker-host:
+          ansible_host: 192.168.1.x
+          wardenhub_expected_ports: [22]
+        my-nginx:
+          ansible_host: 192.168.1.x
+          wardenhub_expected_ports: [22, 80, 443]
+
+    priority_2:
+      hosts:
+        my-proxmox-node:
+          ansible_host: 192.168.1.x
+          wardenhub_expected_ports: [22, 8006]

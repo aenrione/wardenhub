@@ -1,0 +1,5 @@
+# Your real inventory — keep this local, never commit
+inventory.yml
+inventory.yaml
+hosts
+*.vault
