@@ -3,8 +3,8 @@ Description=WardHub Security Audit Timer
 After=network-online.target
 
 [Timer]
-OnCalendar=*:0/180
-Persistent=true
+OnBootSec=5min
+OnUnitActiveSec=3h
 RandomizedDelaySec=300
 
 [Install]

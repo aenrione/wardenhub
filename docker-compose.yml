@@ -1,8 +1,6 @@
 services:
   coordinator:
-    build:
-      context: ./coordinator
-    image: wardenhub/coordinator:latest
+    image: ghcr.io/aenrione/wardenhub-coordinator:latest
     container_name: wardenhub-coordinator
     restart: unless-stopped
     environment:

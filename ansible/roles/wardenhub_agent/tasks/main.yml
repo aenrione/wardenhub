@@ -1,25 +1,29 @@
 ---
-- name: Install pip and python3
+- name: Install python3, python3-venv, git
   ansible.builtin.package:
     name:
       - python3
-      - python3-pip
+      - python3-venv
+      - git
     state: present
-  ignore_errors: true
 
-- name: Install pip via get-pip if package unavailable
-  ansible.builtin.shell: |
-    curl -fsSL https://bootstrap.pypa.io/get-pip.py | python3
-  args:
-    creates: /usr/local/bin/pip
-  when: ansible_facts.packages is not defined or 'python3-pip' not in ansible_facts.packages
+- name: Create venv at /opt/wardenhub-agent
+  ansible.builtin.command:
+    cmd: python3 -m venv /opt/wardenhub-agent
+    creates: /opt/wardenhub-agent/bin/python
 
-- name: Install wardenhub-agent from GitHub
-  ansible.builtin.pip:
-    name: "git+https://github.com/aenrione/wardenhub.git#subdirectory=agent"
-    state: present
-    executable: pip3
-    extra_args: "--break-system-packages"
+- name: Install wardenhub-agent into venv from GitHub
+  ansible.builtin.command:
+    cmd: /opt/wardenhub-agent/bin/pip install --quiet
+         git+https://github.com/aenrione/wardenhub.git#subdirectory=agent
+  register: pip_result
+  changed_when: "'Successfully installed' in pip_result.stdout"
+
+- name: Symlink wardenhub-agent binary to /usr/local/bin
+  ansible.builtin.file:
+    src: /opt/wardenhub-agent/bin/wardenhub-agent
+    dest: /usr/local/bin/wardenhub-agent
+    state: link
 
 - name: Create config directory
   ansible.builtin.file:
@@ -63,4 +67,4 @@
 
 - name: Show first audit result
   ansible.builtin.debug:
-    msg: "{{ first_run.stdout_lines[-3:] if first_run.stdout_lines else 'no output' }}"
+    msg: "{{ first_run.stdout_lines[-5:] if first_run.stdout_lines else first_run.stderr_lines[-3:] }}"
