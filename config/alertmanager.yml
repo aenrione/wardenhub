@@ -1,0 +1,44 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ["alertname", "instance"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: "default"
+  routes:
+    # Critical alerts fire immediately
+    - match:
+        severity: critical
+      receiver: "critical"
+      group_wait: 0s
+      repeat_interval: 1h
+    # Warning alerts batch into daily digest
+    - match:
+        severity: warning
+      receiver: "warning-digest"
+      group_wait: 8h
+      group_interval: 24h
+      repeat_interval: 24h
+
+receivers:
+  - name: "default"
+    # Configure your notification channel here
+    # Example: webhook, email, Slack, PagerDuty
+
+  - name: "critical"
+    # Add critical notification config here
+    # Example webhook:
+    # webhook_configs:
+    #   - url: "http://your-webhook-url"
+
+  - name: "warning-digest"
+    # Add warning digest notification config here
+
+inhibit_rules:
+  - source_match:
+      severity: critical
+    target_match:
+      severity: warning
+    equal: ["instance"]

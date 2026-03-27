@@ -1,0 +1,18 @@
+coordinator:
+  host: "0.0.0.0"
+  port: 8080
+  db_path: "/data/wardenhub.db"
+
+pushgateway:
+  url: "http://pushgateway:9091"
+  cleanup_threshold: "6h"
+
+schedule:
+  interval: "3h"
+
+# Proxmox remote checks (Phase 3 - leave commented until configured)
+# proxmox:
+#   host: "https://192.168.1.2:8006"
+#   verify_ssl: false
+#   token_id: "security-audit@pve!audit-token"
+#   token_secret_file: "/etc/wardenhub/.proxmox-token"

@@ -1,0 +1,33 @@
+# Prometheus configuration for WardHub
+# Used by the --profile full stack, or as a reference for BYOB integration.
+#
+# BYOB users: add the pushgateway scrape job below to your existing prometheus.yml
+
+global:
+  scrape_interval: 60s
+  evaluation_interval: 60s
+
+rule_files:
+  - "/etc/prometheus/alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+scrape_configs:
+  # CRITICAL: honor_labels must be true for Pushgateway
+  # Without it, Prometheus overwrites per-host labels and dashboards break.
+  - job_name: "wardenhub_pushgateway"
+    honor_labels: true
+    static_configs:
+      - targets:
+          - "pushgateway:9091"
+    metrics_path: /metrics
+
+  - job_name: "wardenhub_coordinator"
+    static_configs:
+      - targets:
+          - "coordinator:8080"
+    metrics_path: /metrics

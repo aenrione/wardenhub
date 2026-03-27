@@ -1,0 +1,58 @@
+groups:
+  - name: wardenhub_critical
+    rules:
+      - alert: WardenCriticalFinding
+        expr: wardenhub_check_result{severity="critical"} == 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical security finding on {{ $labels.instance }}"
+          description: "Check {{ $labels.check_id }} failed on {{ $labels.target }} (provider: {{ $labels.provider }})"
+
+      - alert: WardenHardeningScoreDrop
+        expr: delta(wardenhub_lynis_hardening_index[6h]) < -10
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Lynis hardening score dropped on {{ $labels.instance }}"
+          description: "Score dropped by more than 10 points in the last 6 hours"
+
+      - alert: WardenAgentStale
+        expr: time() - wardenhub_last_run_timestamp > 14400
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "WardHub agent on {{ $labels.instance }} has not reported in 4 hours"
+          description: "Last run was {{ $value | humanizeDuration }} ago"
+
+  - name: wardenhub_warning
+    rules:
+      - alert: WardenLowHardeningScore
+        expr: wardenhub_lynis_hardening_index < 50
+        for: 24h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Lynis hardening score below 50 on {{ $labels.instance }}"
+          description: "Score is {{ $value }}/100 — review and fix Lynis suggestions"
+
+      - alert: WardenNewWarnings
+        expr: increase(wardenhub_findings_total{severity="warning"}[6h]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "New security warnings detected on {{ $labels.instance }}"
+          description: "{{ $value }} new warning(s) from provider {{ $labels.provider }}"
+
+      - alert: WardenProviderError
+        expr: wardenhub_provider_error == 1
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "WardHub provider error on {{ $labels.instance }}"
+          description: "Provider {{ $labels.provider }} has been failing for over 1 hour"

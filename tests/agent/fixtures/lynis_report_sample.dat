@@ -1,0 +1,10 @@
+# Lynis report file
+# Created: 2026-03-27
+hardening_index=72
+tests_performed=241
+lynis_version=3.0.9
+warning[]=SSH-7408|Consider disabling SSH root login|/etc/ssh/sshd_config|enable|
+warning[]=FILE_PERMISSIONS_UMASK|Set default umask values|/etc/profile|update|
+suggestion[]=BOOT-5122|Set a password for GRUB bootloader||medium|
+suggestion[]=KRNL-6000|Enable sysctl key kernel.sysrq||medium|
+suggestion[]=AUTH-9328|Default umask in /etc/login.defs could be more strict||low|
