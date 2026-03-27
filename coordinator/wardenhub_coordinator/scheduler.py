@@ -5,7 +5,7 @@ import asyncio
 import structlog
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from wardenhub_agent import __version__
+from wardenhub_coordinator import __version__
 
 log = structlog.get_logger()
 
