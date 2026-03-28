@@ -10,6 +10,9 @@ WardHub is not a real-time intrusion detection system. It is a scheduled auditin
 
 **Target audience:** Self-hosters running Proxmox, Docker, LXC, or plain Linux.
 
+<img width="1302" height="742" alt="image" src="https://github.com/user-attachments/assets/7834e575-8b17-4bcd-aaa6-8c02accf3622" />
+
+
 ---
 
 ## Contents
